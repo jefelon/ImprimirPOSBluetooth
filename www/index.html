@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="format-detection" content="telephone=no">
+        <meta name="msapplication-tap-highlight" content="no">
+        <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
+        <meta name="color-scheme" content="light dark">
+        <link rel="stylesheet" href="css/index.css">
+        <title>Hello World</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        
+    </head>
+    <body>
+        <div class="app">
+            <h1>Apache Cordova</h1>
+            <div id="deviceready" class="blink">
+                <p class="event listening">Connecting to Device</p>
+                <p class="event received">Device is Ready</p>
+            </div>
+            <button id="listar">Listar</button>
+            <button id="conectar">Conectar</button>
+            <button id="imprimir">Imprimir new</button>
+        </div>
+        <script src="cordova.js"></script>
+        <script src="js/index.js"></script>
+
+        <script>
+
+        $(document).ready(function(){
+
+        $("#listar").click(function(){
+                try
+                {
+                    
+                    window.BTPrinter.list(function(data){
+                    alert("Success");
+                    alert(data); //list of printer in data array
+                },function(err){
+                    alert("Error");
+                    alert(err);
+                })
+                }
+                catch(e)
+                {
+                    alert(e.message)
+                }
+            });
+
+        });
+
+        $("#conectar").click(function(){
+                try
+                {                   
+                    BTPrinter.connect(function(data){
+                    alert("Success");
+                    alert(data)
+                },function(err){
+                    alert("Error");
+                    alert(err);
+                },"BlueTooth Printer")
+                }
+                catch(e)
+                {
+                    alert(e.message)
+                }
+        });
+
+        $("#imprimir").click(function(){
+                try
+                {  
+                    // test
+                            //Set content to print...
+                    //Create ESP/POS commands for sample label
+                    var esc = '\x1B'; //ESC byte in hex notation
+                    var newLine = '\x0A'; //LF byte in hex notation
+                
+                    var cmds = esc + "@"; //Initializes the printer (ESC @)
+                    cmds += esc + '!' + '1B7B2 '; //
+                    cmds += esc + '!' + '\x38'; //Emphasized + Double-height + Double-width mode selected (ESC ! (8 + 16 + 32)) 56 dec => 38 hex
+                    cmds += 'BEST DEAL STORES'; //text to print
+                    cmds += newLine + newLine;
+                    cmds += esc + '!' + '\x00'; //Character font A selected (ESC ! 0)
+                    cmds += 'COOKIES                   5.00'; 
+                    cmds += newLine;
+                    cmds += 'MILK 65 Fl oz             3.78';
+                    cmds += '...............................';
+                    cmds += newLine + newLine;
+                    cmds += 'SUBTOTAL                  8.78';
+                    cmds += newLine;
+                    cmds += 'TAX 5%                    0.44';
+                    cmds += newLine;
+                    cmds += 'TOTAL                     9.22';
+                    cmds += newLine;
+                    cmds += 'CASH TEND                10.00';
+                    cmds += newLine;
+                    cmds += 'CASH DUE                  0.78';
+                    cmds += newLine + newLine;
+                    cmds += esc + '!' + '\x18'; //Emphasized + Double-height mode selected (ESC ! (16 + 8)) 24 dec => 18 hex
+                    cmds += '# ITEMS SOLD 2';
+                    cmds += 'SON: ína On ñato di\' note ';
+                    cmds += esc + '!' + '\x00'; //Character font A selected (ESC ! 0)
+                    cmds += newLine + newLine;
+                    cmds += '11/03/13  19:53:17';
+
+                    //fintest
+
+                    BTPrinter.printText(function(data){
+                    alert("Success");
+                    alert(data)
+                },function(err){
+                    alert("Error");
+                    alert(err);
+                },cmds)
+                }
+                catch(e)
+                {
+                    alert(e.message)
+                }
+        });
+
+
+        </script>
+    </body>
+</html>
